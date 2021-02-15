@@ -22,11 +22,11 @@ const render = (root, container) => {
     root.type === "TEXT_ELEMENT"
       ? document.createTextNode("")
       : document.createElement(root.type);
-  
+
   Object.keys(root.props).forEach((prop) => {
     if (prop !== "children") node[prop] = root.props[prop];
   });
-  
+
   root.props.children.forEach((child) => {
     render(child, node);
   });
@@ -36,20 +36,7 @@ const render = (root, container) => {
 
 const ReactRedo = {
   createElement,
-  render
+  render,
 };
 
-/* @jsx ReactRedo.createElement */
-const someElem = (
-  <div>
-    <h1>
-      Hey yo
-    </h1>
-    <h2>
-      this is simply amazing
-    </h2>
-  </div>
-);
-
-const container = document.getElementById("root");
-ReactRedo.render(someElem, container);
+export default ReactRedo;
