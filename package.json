@@ -1,0 +1,16 @@
+{
+  "name": "reactRedo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Edgar Khanzadian <edgar.khanzadian@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "babel": "babel --watch index.js --out-dir out"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.12.16",
+    "@babel/core": "^7.12.16",
+    "@babel/preset-env": "^7.12.16",
+    "@babel/preset-react": "^7.12.13"
+  }
+}
