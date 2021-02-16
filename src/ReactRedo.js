@@ -30,20 +30,34 @@ const createNode = (fiber) => {
   return node;
 };
 
-var nextUnitOfWork = null;
+let nextUnitOfWork = null;
+let wipRoot = null;
 
 const render = (element, container) => {
-  const unit = {
+  wipRoot = {
     domNode: container,
     children: [element, element],
   };
-  nextUnitOfWork = unit;
+  nextUnitOfWork = wipRoot;
+};
+
+const commitWork = (unit) => {
+  if (!unit) return;
+  if (unit.parent) unit.parent.domNode.appendChild(unit.domNode);
+  if (unit.children && unit.children.length !== 0) {
+    commitWork(unit.children[0]);
+  }
+  if (unit.rightSibling) {
+    commitWork(unit.rightSibling);
+  }
+};
+
+const commitRoot = () => {
+  commitWork(wipRoot);
+  wipRoot = null;
 };
 
 function performUnitOfWork(unit) {
-  if (unit.parent) {
-    unit.parent.domNode.appendChild(unit.domNode);
-  }
   if (unit.alreadyBeenUsed) {
     if (unit.rightSibling) {
       return unit.rightSibling;
@@ -64,13 +78,14 @@ function performUnitOfWork(unit) {
         lastRightSibling = nextUnit;
         childrenUnitArray[i] = nextUnit;
       }
+      unit.children = childrenUnitArray;
       if (childrenUnitArray[0]) {
         return childrenUnitArray[0];
       }
     }
   }
-
-  return unit.parent;
+  if (unit.parent) return unit.parent;
+  return null;
 }
 
 function workLoop(deadline) {
@@ -78,6 +93,9 @@ function workLoop(deadline) {
   while (nextUnitOfWork && !shouldYield) {
     nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
     shouldYield = deadline.timeRemaining() < 1;
+  }
+  if (!nextUnitOfWork && wipRoot) {
+    commitRoot();
   }
   window.requestIdleCallback(workLoop);
 }
